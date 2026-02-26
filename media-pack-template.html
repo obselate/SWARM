@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWARM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-darker: #131515;
+    --bg-main: #1D2020;
+    --bg-lighter: #272B2B;
+    --accent-blue: #0066CC;
+    --accent-blue-dark: #0052A3;
+    --accent-blue-darker: #003D7A;
+    --accent-green: #28A745;
+    --accent-green-dark: #1E7E34;
+    --accent-red: #E81123;
+    --warning-yellow: #F9A825;
+    --link-blue: #4DA8DA;
+    --link-hover: #7ECFFF;
+    --surface-hover: #3A3F3F;
+    --surface-pressed: #4A4F4F;
+    --selected-row: #2D5A7B;
+    --fg: #FFFFFF;
+    --fg-dim: #AAAAAA;
+    --fg-muted: #666666;
+    --border-subtle: #2A2E2E;
+    --sp-xxs: 2px;
+    --sp-xs: 4px;
+    --sp-sm: 8px;
+    --sp-md: 12px;
+    --sp-lg: 16px;
+    --sp-xl: 20px;
+    --sp-xxl: 24px;
+    --sp-3xl: 32px;
+    --r-sm: 4px;
+    --r-md: 8px;
+    --r-lg: 12px;
+    --shadow-shallow: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-deep: 0 16px 48px rgba(0,0,0,0.22);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-main);
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media print {
+    body { background: #000; }
+    .hero { break-after: page; }
+    section { break-inside: avoid; }
+    .fade-in { opacity: 1 !important; transform: none !important; }
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 var(--sp-3xl);
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes countUp {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  .fade-in.visible {
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-6 { animation-delay: 0.3s; }
+
+  .metric-value {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: var(--sp-xs);
+  }
+  .metric-value.counted {
+    animation: countUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--bg-darker) url('./media_pack_swarm/bg_title.png') center center / cover no-repeat;
+    border-bottom: 2px solid var(--accent-blue);
+    padding: 80px 0 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,102,204,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(0,102,204,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero .container { position: relative; z-index: 1; text-align: center; }
+  .hero-logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--sp-xxl);
+  }
+  .hero-app-name {
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    text-align: center;
+  }
+  .hero-subtitle {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--fg-dim);
+    margin-top: var(--sp-md);
+    text-align: center;
+  }
+
+  /* ── Sections ── */
+  section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: var(--sp-sm);
+  }
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: var(--sp-sm);
+    letter-spacing: -0.5px;
+  }
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--fg-dim);
+    margin-bottom: var(--sp-3xl);
+    max-width: 640px;
+  }
+
+  /* ── About ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-xxl);
+  }
+  .about-text {
+    font-size: 14px;
+    color: var(--fg-dim);
+    line-height: 1.75;
+  }
+  .about-highlights {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-lg);
+  }
+  .highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-md);
+  }
+  .highlight-icon {
+    width: 36px; height: 36px; min-width: 36px;
+    background: rgba(0,102,204,0.12);
+    border-radius: var(--r-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .highlight-icon svg { width: 18px; height: 18px; }
+  .highlight-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .highlight-desc {
+    font-size: 12px;
+    color: var(--fg-dim);
+  }
+
+  /* ── Metrics ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-lg);
+  }
+  .metric-card {
+    background: var(--bg-darker);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    padding: var(--sp-xxl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-blue);
+  }
+  .metric-card.green::before { background: var(--accent-green); }
+  .metric-card.yellow::before { background: var(--warning-yellow); }
+  .metric-card.green .metric-value { color: var(--accent-green); }
+  .metric-card.yellow .metric-value { color: var(--warning-yellow); }
+  .metric-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fg-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .metric-detail {
+    font-size: 11px;
+    color: var(--fg-muted);
+    margin-top: var(--sp-sm);
+  }
+
+  /* ── Features ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-lg);
+  }
+  .feature-card {
+    background: var(--bg-lighter);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    padding: var(--sp-xxl);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  }
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-shallow);
+  }
+  .feature-icon {
+    width: 40px; height: 40px;
+    background: rgba(0,102,204,0.12);
+    border-radius: var(--r-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--sp-lg);
+  }
+  .feature-icon svg { width: 20px; height: 20px; }
+  .feature-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: var(--sp-sm);
+  }
+  .feature-desc {
+    font-size: 13px;
+    color: var(--fg-dim);
+    line-height: 1.6;
+  }
+
+  /* ── Target Environment ── */
+  .env-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-3xl);
+  }
+  .env-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-md);
+  }
+  .env-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-md);
+    font-size: 14px;
+    color: var(--fg-dim);
+  }
+  .env-list li::before {
+    content: '';
+    width: 8px; height: 8px; min-width: 8px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+  }
+  .env-note {
+    background: var(--bg-darker);
+    border: 1px solid var(--border-subtle);
+    border-left: 3px solid var(--accent-blue);
+    border-radius: var(--r-sm);
+    padding: var(--sp-xl);
+  }
+  .env-note-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: var(--sp-sm);
+  }
+  .env-note-text {
+    font-size: 13px;
+    color: var(--fg-dim);
+    line-height: 1.6;
+  }
+
+  /* ── Licensing ── */
+  .license-card {
+    background: var(--bg-darker);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    padding: var(--sp-3xl) var(--sp-xxl);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  }
+  .license-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-deep);
+  }
+  .license-card.featured { border-color: var(--accent-blue); }
+  .license-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: var(--sp-xs);
+  }
+  .license-desc {
+    font-size: 12px;
+    color: var(--fg-dim);
+    margin-bottom: var(--sp-xxl);
+    line-height: 1.5;
+  }
+  .license-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-sm);
+    flex: 1;
+  }
+  .license-features li {
+    font-size: 13px;
+    color: var(--fg-dim);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-sm);
+  }
+  .license-features li::before {
+    content: '✓';
+    color: var(--accent-green);
+    font-weight: 700;
+    font-size: 12px;
+    min-width: 16px;
+  }
+
+  /* ── Contact / CTA ── */
+  .cta-section {
+    background: var(--bg-darker) url('./media_pack_swarm/bg_banner.png') center center / cover no-repeat;
+    border-top: 2px solid var(--accent-blue);
+    padding: 64px 0;
+  }
+  .cta-inner {
+    text-align: center;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .cta-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: var(--sp-md);
+    letter-spacing: -0.5px;
+  }
+  .cta-text {
+    font-size: 14px;
+    color: var(--fg-dim);
+    margin-bottom: var(--sp-3xl);
+    line-height: 1.6;
+  }
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--sp-lg);
+    margin-bottom: var(--sp-3xl);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-sm);
+    padding: 10px 24px;
+    border-radius: var(--r-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent-blue);
+    color: var(--fg);
+  }
+  .btn-primary:hover { background: var(--accent-blue-dark); }
+  .cta-contact {
+    display: flex;
+    justify-content: center;
+    gap: var(--sp-3xl);
+  }
+  .cta-contact-item {
+    font-size: 13px;
+    color: var(--fg-dim);
+  }
+  .cta-contact-item strong {
+    display: block;
+    font-size: 11px;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--sp-xs);
+    font-weight: 600;
+  }
+  .cta-contact-item a {
+    color: var(--link-blue);
+    text-decoration: none;
+  }
+  .cta-contact-item a:hover { color: var(--link-hover); }
+
+  /* ── Footer ── */
+  .footer {
+    padding: var(--sp-xxl) 0;
+    text-align: center;
+    font-size: 11px;
+    color: var(--fg-muted);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .container { padding: 0 var(--sp-lg); }
+    .hero { padding: 48px 0 40px; }
+    .hero-app-name { font-size: 36px; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .features-grid { grid-template-columns: 1fr; }
+    .about-grid, .env-content { grid-template-columns: 1fr; }
+    .cta-actions { flex-direction: column; align-items: center; }
+    .cta-contact { flex-direction: column; gap: var(--sp-lg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-logo-area">
+      <img src="./media_pack_swarm/swarm.png" alt="SWARM Logo" height=256 width=256>
+      <h1 class="hero-app-name">SWARM</h1>
+      <p class="hero-subtitle">STIG Workflow and Review Manager</p>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════ ABOUT ═══════ -->
+<section>
+  <div class="container">
+    <h2 class="section-title fade-in">About SWARM</h2>
+
+    <div class="about-grid">
+      <div class="about-text fade-in stagger-1">
+        <p>SWARM is a native desktop application designed for cybersecurity professionals working within DoD and government environments. It provides a centralized interface for loading, reviewing, editing, and managing DISA STIG checklists — replacing fragmented manual processes with a streamlined, high-performance workflow.</p>
+        <br>
+        <p>SWARM is fully standalone and portable — no installation, no cloud dependencies, no external services required. Drop it on a machine and it runs. This makes it equally at home on any network, connected or disconnected, and means teams can be productive immediately without waiting on IT or infrastructure.</p>
+        <br>
+        <p>SWARM was designed by practitioners who live in the STIG ecosystem daily. Every feature exists because it solves a real problem — not because it looks good on a slide. The result is a tool that fits naturally into existing RMF workflows while dramatically reducing the time and effort required to maintain compliance posture.</p>
+      </div>
+      <div class="about-highlights">
+        <div class="highlight-item fade-in stagger-1">
+          <div class="highlight-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div>
+            <div class="highlight-label">High-Performance Native App</div>
+            <div class="highlight-desc">Loads and manages hundreds of checklists with instant filtering and a responsive interface — fast enough to keep up with your workflow.</div>
+          </div>
+        </div>
+        <div class="highlight-item fade-in stagger-2">
+          <div class="highlight-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="highlight-label">Standalone &amp; Portable</div>
+            <div class="highlight-desc">No installation, no dependencies, no network required. Runs on any machine, on any network — connected or disconnected.</div>
+          </div>
+        </div>
+        <div class="highlight-item fade-in stagger-3">
+          <div class="highlight-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div>
+            <div class="highlight-label">Bulk Checklist Management</div>
+            <div class="highlight-desc">Load entire directories of CKL files, edit findings across multiple checklists, and track unsaved changes at a glance.</div>
+          </div>
+        </div>
+        <div class="highlight-item fade-in stagger-4">
+          <div class="highlight-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div class="highlight-label">Advanced Filtering &amp; Sharing</div>
+            <div class="highlight-desc">Build powerful custom filters to slice through findings by severity, status, STIG, or any combination — then export and share filters across your team.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ KEY METRICS ═══════ -->
+<section>
+  <div class="container">
+    <div class="section-label fade-in">Performance</div>
+    <h2 class="section-title fade-in">Key Metrics</h2>
+    <p class="section-subtitle fade-in">Real-world tested at scale — not synthetic benchmarks.</p>
+
+    <div class="metrics-grid">
+      <div class="metric-card fade-in stagger-1">
+        <div class="metric-value" data-count="15" data-prefix="<" data-suffix="s">&lt;15s</div>
+        <div class="metric-label">Load Time</div>
+        <div class="metric-detail">Over 1,200 checklists loaded and parsed</div>
+      </div>
+      <div class="metric-card green fade-in stagger-2">
+        <div class="metric-value" data-count="500" data-suffix="k+">500k+</div>
+        <div class="metric-label">Findings Rendered</div>
+        <div class="metric-detail">Smooth scrolling, zero stutter</div>
+      </div>
+      <div class="metric-card yellow fade-in stagger-3">
+        <div class="metric-value" data-count="0.1" data-prefix="<" data-suffix="s">&lt;0.1s</div>
+        <div class="metric-label">Filter Speed</div>
+        <div class="metric-detail">Across 1M+ total rows</div>
+      </div>
+      <div class="metric-card fade-in stagger-4">
+        <div class="metric-value" data-count="50" data-prefix="<" data-suffix="MB">&lt;50MB</div>
+        <div class="metric-label">Total Footprint</div>
+        <div class="metric-detail">Single portable application</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PRODUCT FEATURES ═══════ -->
+<section>
+  <div class="container">
+    <div class="section-label fade-in">Capabilities</div>
+    <h2 class="section-title fade-in">Product Features</h2>
+    <p class="section-subtitle fade-in">Everything you need to manage STIG compliance at scale — nothing you don't.</p>
+
+    <div class="features-grid">
+      <div class="feature-card fade-in stagger-1">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="feature-name">Bulk Operations</div>
+        <div class="feature-desc">Load, edit, save, and manage hundreds of checklists at once. Select a directory and SWARM handles the rest — bulk status changes, bulk comments, bulk saves. Everything scales.</div>
+      </div>
+      <div class="feature-card fade-in stagger-2">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="feature-name">Advanced Filtering</div>
+        <div class="feature-desc">Build powerful custom filters to slice through findings by severity, status, STIG, or any combination. Filters apply instantly across massive datasets — and can be exported and shared across your team.</div>
+      </div>
+      <div class="feature-card fade-in stagger-3">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="feature-name">Mitigations &amp; Overlays</div>
+        <div class="feature-desc">Apply answer files or overlays to auto-answer vulnerabilities in bulk. Preview exactly what will change before committing, and selectively apply only the findings you want.</div>
+      </div>
+      <div class="feature-card fade-in stagger-4">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="feature-name">Host Info Management</div>
+        <div class="feature-desc">Manage hostname, IP, MAC, and FQDN across multiple checklists simultaneously. Update machine identity in bulk instead of editing checklists one at a time.</div>
+      </div>
+      <div class="feature-card fade-in stagger-5">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="feature-name">Export &amp; Reporting</div>
+        <div class="feature-desc">Export host information to CSV or XLSX. Get the data out in the format you need for reporting, audits, or inventory tracking.</div>
+      </div>
+      <div class="feature-card fade-in stagger-6">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        </div>
+        <div class="feature-name">Cross-Platform &amp; Portable</div>
+        <div class="feature-desc">Runs natively on Windows, macOS, and Linux. No installation, no dependencies, no network required — drop it on a machine and go.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ TARGET ENVIRONMENT ═══════ -->
+<section>
+  <div class="container">
+    <div class="section-label fade-in">Audience</div>
+    <h2 class="section-title fade-in">Target Environment</h2>
+    <p class="section-subtitle fade-in">Built by and for the people who actually do the work.</p>
+
+    <div class="env-content">
+      <div class="fade-in stagger-1">
+        <ul class="env-list">
+          <li>Department of Defense (DoD)</li>
+          <li>NAVSEA / Naval Systems Commands</li>
+          <li>Government entities managing RMF compliance</li>
+          <li>Information System Security Officers (ISSOs)</li>
+          <li>System administrators performing STIG assessments</li>
+          <li>Any organization working with DISA STIG checklists</li>
+        </ul>
+      </div>
+      <div class="fade-in stagger-2">
+        <div class="env-note">
+          <div class="env-note-title">Works Everywhere, Out of the Box</div>
+          <div class="env-note-text">SWARM requires no setup, no configuration, and no network access to function. It runs on classified networks, unclassified networks, connected environments, and fully disconnected systems. Drop it on a machine and start working immediately.</div>
+        </div>
+        <div class="env-note" style="margin-top: var(--sp-lg);">
+          <div class="env-note-title">RMF &amp; DISA STIG Aligned</div>
+          <div class="env-note-text">SWARM follows the same NIST standards and checklist workflows used by industry-standard RMF tools. It utilizes official DISA STIGs and produces checklists fully compatible with existing review processes. SWARM has been used in RMF compliance efforts to approve packages reviewed by NAVSEA.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ LICENSING & SUPPORT ═══════ -->
+<section>
+  <div class="container">
+    <div class="section-label fade-in">Procurement</div>
+    <h2 class="section-title fade-in">Licensing &amp; Support</h2>
+    <p class="section-subtitle fade-in">Simple volume licensing with ongoing maintenance and dedicated support.</p>
+
+    <div style="max-width: 720px; margin: 0 auto;" class="fade-in stagger-1">
+      <div class="license-card featured" style="padding-top: 44px;">
+        <div style="position:absolute;top:0;left:0;right:0;background:var(--accent-blue);color:white;text-align:center;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 0;border-radius:var(--r-md) var(--r-md) 0 0;">VOLUME LICENSE — ANNUAL CONTRACT</div>
+        <div class="license-name" style="font-size:24px;margin-bottom:var(--sp-md);">SWARM</div>
+        <div class="license-desc" style="font-size:14px;margin-bottom:var(--sp-xxl);line-height:1.6;">Every seat gets the full product — no feature gates, no hidden fees, no surprises.</div>
+        <ul class="license-features" style="gap:var(--sp-md);">
+          <li>Per-seat volume licensing scaled to your deployment</li>
+          <li>Annual contract term with flexible renewal</li>
+          <li>All patches, updates, and new features included</li>
+          <li>Dedicated support from a team that knows the tool and your environment</li>
+        </ul>
+        <div style="margin-top:var(--sp-3xl);padding-top:var(--sp-xl);border-top:1px solid var(--border-subtle);text-align:center;">
+          <a href="mailto:[email]" class="btn btn-primary" style="padding:12px 40px;font-size:16px;">Request a Quote</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CONTACT / CTA ═══════ -->
+<div class="cta-section">
+  <div class="container">
+    <div class="cta-inner">
+      <h2 class="cta-title fade-in">Ready to Get Started?</h2>
+      <p class="cta-text fade-in stagger-1">See SWARM in action — request a demo and we'll walk you through it.</p>
+      <div class="cta-actions fade-in stagger-2">
+        <a href="mailto:[email]?subject=SWARM%20Demo%20Request" class="btn btn-primary">Request a Demo</a>
+      </div>
+      <div class="cta-contact fade-in stagger-3">
+        <div class="cta-contact-item">
+          <strong>Email</strong>
+          <a href="mailto:[email]">swarm@company.com</a>
+        </div>
+        <div class="cta-contact-item">
+          <strong>Phone</strong>
+          123-456-7890
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="footer">
+  <div class="container">
+    © 2026 SWARM. All rights reserved.
+  </div>
+</footer>
+
+<script>
+// ── Scroll fade-in observer ──
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.metric-value[data-count]').forEach(el => {
+        if (el.classList.contains('counted')) return;
+        el.classList.add('counted');
+        animateValue(el);
+      });
+    }
+  });
+}, { threshold: 0.3, rootMargin: '0px 0px -80px 0px' });
+
+// Only observe elements that aren't already visible in the initial viewport
+setTimeout(() => {
+  document.querySelectorAll('.fade-in').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.75) {
+      // Already in view on load — show immediately, no animation
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    } else {
+      obs.observe(el);
+    }
+  });
+}, 50);
+
+// ── Metric count-up animation ──
+function animateValue(el) {
+  const target = parseFloat(el.dataset.count);
+  const prefix = el.dataset.prefix || '';
+  const suffix = el.dataset.suffix || '';
+  const isDecimal = target < 1;
+  const duration = 800;
+  const start = performance.now();
+
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const current = target * eased;
+
+    if (isDecimal) {
+      el.textContent = prefix + current.toFixed(1) + suffix;
+    } else {
+      el.textContent = prefix + Math.round(current) + suffix;
+    }
+
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+</script>
+
+</body>
+</html>
