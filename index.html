@@ -1,805 +1,1753 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-P4QQV0YNHH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-P4QQV0YNHH');
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SWARM</title>
-<link rel="icon" type="image/x-icon" href="./media_pack_swarm/swarm.ico">
-<meta property="og:title" content="SWARM — STIG Workflow and Review Manager">
-<meta property="og:description" content="A high-performance native application for managing DISA STIG checklists at scale. Portable, cross-platform, and built for government compliance workflows.">
-<meta property="og:image" content="https://useswarm.tools/media_pack_swarm/swarm-embed.png">
-<meta property="og:url" content="https://useswarm.tools">
+<title>SWARM — STIG Workflow And Review Manager</title>
+<meta name="description" content="SWARM is a high-performance desktop application for managing DISA STIG checklists. Load thousands of CKLs, edit in bulk, save in seconds. No installation required.">
+<meta property="og:title" content="SWARM — STIG Workflow And Review Manager">
+<meta property="og:description" content="Load thousands of DISA STIG checklists. Edit in bulk. Save in seconds. No installation, no dependencies, no internet required.">
+<meta property="og:image" content="media_pack_swarm/swarm-embed.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="SWARM — A high-performance native application for managing DISA STIG checklists at scale.">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="media_pack_swarm/swarm.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg-darker: #131515;
-    --bg-main: #1D2020;
-    --bg-lighter: #272B2B;
-    --accent-blue: #0066CC;
-    --accent-blue-dark: #0052A3;
-    --accent-blue-darker: #003D7A;
-    --accent-green: #28A745;
-    --accent-green-dark: #1E7E34;
-    --accent-red: #E81123;
-    --warning-yellow: #F9A825;
-    --link-blue: #4DA8DA;
-    --link-hover: #7ECFFF;
-    --surface-hover: #3A3F3F;
-    --surface-pressed: #4A4F4F;
-    --selected-row: #2D5A7B;
-    --fg: #FFFFFF;
-    --fg-dim: #AAAAAA;
-    --fg-muted: #666666;
-    --border-subtle: #2A2E2E;
-    --sp-xxs: 2px;
-    --sp-xs: 4px;
-    --sp-sm: 8px;
-    --sp-md: 12px;
-    --sp-lg: 16px;
-    --sp-xl: 20px;
-    --sp-xxl: 24px;
-    --sp-3xl: 32px;
-    --r-sm: 4px;
-    --r-md: 8px;
-    --r-lg: 12px;
-    --shadow-shallow: 0 4px 16px rgba(0,0,0,0.12);
-    --shadow-deep: 0 16px 48px rgba(0,0,0,0.22);
-  }
+/* ================================================================
+   SWARM DESIGN SYSTEM — useswarm.tools
+   ================================================================ */
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* --- Reset & Base --- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg-main);
-    color: var(--fg);
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
+:root {
+  /* Backgrounds */
+  --bg-body:      #0A0C0C;
+  --bg-darker:    #131515;
+  --bg-main:      #1D2020;
+  --bg-lighter:   #272B2B;
+  --bg-card:      #161919;
 
-  @media print {
-    body { background: #000; }
-    .hero { break-after: page; }
-    section { break-inside: avoid; }
-    .fade-in { opacity: 1 !important; transform: none !important; }
-  }
+  /* Accent */
+  --accent-blue:       #0066CC;
+  --accent-blue-light: #1A8CFF;
+  --accent-blue-glow:  rgba(0, 102, 204, 0.25);
+  --accent-green:      #28A745;
+  --accent-green-glow: rgba(40, 167, 69, 0.2);
 
-  .container {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 var(--sp-3xl);
-  }
+  /* Text */
+  --fg:          #FFFFFF;
+  --fg-subtle:   #B0B0B0;
+  --fg-muted:    #666666;
 
-  /* ── Animations ── */
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes countUp {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
-  }
+  /* Borders */
+  --border:        #1E2222;
+  --border-subtle: #2A2E2E;
 
-  .fade-in {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  .fade-in.visible {
-    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  .stagger-1 { animation-delay: 0.05s; }
-  .stagger-2 { animation-delay: 0.1s; }
-  .stagger-3 { animation-delay: 0.15s; }
-  .stagger-4 { animation-delay: 0.2s; }
-  .stagger-5 { animation-delay: 0.25s; }
-  .stagger-6 { animation-delay: 0.3s; }
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
 
-  .metric-value {
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: -1px;
-    margin-bottom: var(--sp-xs);
-  }
-  .metric-value.counted {
-    animation: countUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+  /* Spacing */
+  --section-pad: 120px;
+  --container: 1200px;
 
-  /* ── HERO ── */
-  .hero {
-    background: var(--bg-darker) url('./media_pack_swarm/bg_title.png') center center / cover no-repeat;
-    border-bottom: 2px solid var(--accent-blue);
-    padding: 80px 0 64px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-body);
+  color: var(--fg-subtle);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+a { color: var(--accent-blue-light); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #fff; }
+
+img { max-width: 100%; height: auto; }
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-body); }
+::-webkit-scrollbar-thumb { background: var(--bg-lighter); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-muted); }
+
+/* --- Typography --- */
+h1, h2, h3, h4 { color: var(--fg); font-weight: 700; line-height: 1.2; }
+h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 16px; }
+h3 { font-size: 1.5rem; margin-bottom: 12px; }
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent-blue-light);
+  margin-bottom: 20px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: var(--accent-blue);
+}
+
+.section-desc {
+  font-size: 1.15rem;
+  color: var(--fg-subtle);
+  max-width: 640px;
+  line-height: 1.8;
+}
+
+.brand-mention { font-weight: 600; color: var(--fg); }
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--fg) 0%, var(--accent-blue-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn:hover::after { opacity: 1; }
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: #fff;
+  box-shadow: 0 0 0 0 var(--accent-blue-glow);
+}
+.btn-primary:hover {
+  background: var(--accent-blue-light);
+  color: #fff;
+  box-shadow: 0 0 30px 6px var(--accent-blue-glow);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--border-subtle);
+}
+.btn-outline:hover {
+  background: var(--bg-lighter);
+  color: #fff;
+  border-color: var(--fg-muted);
+  transform: translateY(-2px);
+}
+
+.btn-group { display: flex; gap: 16px; flex-wrap: wrap; }
+
+/* --- Navigation --- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0 32px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav.scrolled {
+  background: rgba(10, 12, 12, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: var(--container);
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.nav-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.nav-brand-text {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: 2px;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.nav-link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fg-subtle);
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent-blue);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-link:hover,
+.nav-link.active { color: var(--fg); }
+.nav-link:hover::after,
+.nav-link.active::after { width: 100%; }
+
+.nav-cta {
+  padding: 8px 20px;
+  font-size: 0.85rem;
+}
+
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.nav-hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--fg);
+  transition: all 0.3s;
+}
+
+/* --- Hero Section --- */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 120px 32px 80px;
+}
+
+/* Honeycomb pattern */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 56px 100px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 70%);
+}
+
+/* Gradient orbs - fade and drift */
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+}
+.hero-orb-1 {
+  width: 600px;
+  height: 600px;
+  top: -15%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(0, 102, 204, 0.14) 0%, transparent 70%);
+  animation: orbDrift1 18s ease-in-out infinite;
+}
+.hero-orb-2 {
+  width: 500px;
+  height: 500px;
+  bottom: -10%;
+  right: -5%;
+  background: radial-gradient(circle, rgba(40, 167, 69, 0.1) 0%, transparent 70%);
+  animation: orbDrift2 22s ease-in-out infinite;
+}
+.hero-orb-3 {
+  width: 400px;
+  height: 400px;
+  top: 20%;
+  right: 15%;
+  background: radial-gradient(circle, rgba(0, 102, 204, 0.08) 0%, transparent 70%);
+  animation: orbDrift3 26s ease-in-out infinite;
+}
+
+@keyframes orbDrift1 {
+  0%   { transform: translate(0, 0) scale(1);     opacity: 0.4; }
+  20%  { transform: translate(80px, 60px) scale(1.15); opacity: 1; }
+  40%  { transform: translate(140px, 20px) scale(0.9);  opacity: 0.3; }
+  60%  { transform: translate(40px, -40px) scale(1.1);  opacity: 0.9; }
+  80%  { transform: translate(-60px, 30px) scale(0.95); opacity: 0.5; }
+  100% { transform: translate(0, 0) scale(1);     opacity: 0.4; }
+}
+@keyframes orbDrift2 {
+  0%   { transform: translate(0, 0) scale(1);      opacity: 0.6; }
+  25%  { transform: translate(-70px, -50px) scale(1.1); opacity: 0.2; }
+  50%  { transform: translate(-120px, 20px) scale(0.85); opacity: 1; }
+  75%  { transform: translate(40px, -60px) scale(1.05); opacity: 0.4; }
+  100% { transform: translate(0, 0) scale(1);      opacity: 0.6; }
+}
+@keyframes orbDrift3 {
+  0%   { transform: translate(0, 0) scale(1);       opacity: 0.3; }
+  30%  { transform: translate(-100px, 50px) scale(1.2); opacity: 0.8; }
+  50%  { transform: translate(-60px, 80px) scale(0.9);  opacity: 0.1; }
+  70%  { transform: translate(60px, 30px) scale(1.1);   opacity: 0.7; }
+  100% { transform: translate(0, 0) scale(1);       opacity: 0.3; }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+
+.hero-logo {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 32px;
+  animation: heroLogoIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+.hero-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 60px rgba(0, 102, 204, 0.35));
+}
+
+@keyframes heroLogoIn {
+  from { opacity: 0; transform: scale(0.8) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.hero h1 {
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-bottom: 8px;
+  animation: heroTextIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.hero-tagline {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-weight: 500;
+  color: var(--fg-subtle);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  animation: heroTextIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+.hero-desc {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: var(--fg-subtle);
+  max-width: 600px;
+  margin: 0 auto 48px;
+  line-height: 1.8;
+  animation: heroTextIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+}
+
+.hero .btn-group {
+  justify-content: center;
+  animation: heroTextIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+}
+
+@keyframes heroTextIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: heroTextIn 1s cubic-bezier(0.16, 1, 0.3, 1) 1s both;
+}
+.scroll-indicator span {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--accent-blue), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
+/* Accent line between hero and stats */
+.hero-accent-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+}
+
+/* --- Stats Bar --- */
+.stats-bar {
+  background: var(--bg-darker);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 32px;
+}
+.stats-grid {
+  max-width: var(--container);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  text-align: center;
+}
+.stat-item { padding: 8px 0; }
+.stat-number {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-number .accent { color: var(--accent-blue-light); }
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+/* --- Section Layout --- */
+.section {
+  padding: var(--section-pad) 0;
+  position: relative;
+}
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+/* --- About Section --- */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.about-text { max-width: 520px; }
+.about-text p {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  margin-bottom: 24px;
+}
+.about-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.about-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  transition: all 0.3s;
+}
+.about-card:hover {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 30px rgba(0, 102, 204, 0.08);
+  transform: translateX(4px);
+}
+.about-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.about-card-title .icon {
+  width: 20px;
+  height: 20px;
+  fill: var(--accent-blue-light);
+  flex-shrink: 0;
+}
+.about-card p {
+  font-size: 0.9rem;
+  color: var(--fg-subtle);
+  line-height: 1.7;
+}
+
+/* --- Portable Banner --- */
+.portable-banner {
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.08) 0%, rgba(40, 167, 69, 0.05) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 48px 56px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: 64px;
+}
+.portable-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--bg-lighter);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.portable-icon svg {
+  width: 32px;
+  height: 32px;
+  fill: var(--accent-green);
+}
+.portable-text h3 {
+  font-size: 1.3rem;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.portable-text p {
+  font-size: 1.05rem;
+  color: var(--fg-subtle);
+  line-height: 1.7;
+}
+
+/* --- Features Section --- */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+}
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-light));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.feature-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 102, 204, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 102, 204, 0.06);
+}
+.feature-card:hover::before { opacity: 1; }
+
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+.feature-icon svg {
+  width: 26px;
+  height: 26px;
+  position: relative;
+  z-index: 1;
+}
+.feature-icon.blue    { background: rgba(0, 102, 204, 0.12); }
+.feature-icon.blue svg { fill: var(--accent-blue-light); }
+.feature-icon.green    { background: rgba(40, 167, 69, 0.12); }
+.feature-icon.green svg { fill: var(--accent-green); }
+
+.feature-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+}
+.feature-card p {
+  font-size: 0.9rem;
+  color: var(--fg-subtle);
+  line-height: 1.7;
+}
+
+/* --- Showcase Section (Search) --- */
+.showcase {
+  margin-top: 80px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.showcase-text h3 {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+}
+.showcase-text p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+.showcase-pairs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.showcase-pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.showcase-example {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--fg-subtle);
+  transition: all 0.2s;
+}
+.showcase-example:hover {
+  border-color: var(--accent-blue);
+  color: var(--fg);
+}
+.showcase-example .kw { color: var(--accent-blue-light); }
+.showcase-example .val { color: var(--accent-green); }
+.showcase-example .op { color: #F9A825; }
+.showcase-or {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #F9A825;
+  letter-spacing: 2px;
+  padding: 6px 0;
+}
+
+.showcase-visual {
+  position: relative;
+}
+.showcase-img {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.showcase-img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 102, 204, 0.08);
+}
+
+/* --- Audience Section --- */
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+}
+.audience-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.audience-card:hover {
+  border-color: var(--border-subtle);
+  transform: translateY(-4px);
+}
+.audience-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0, 102, 204, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+.audience-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--accent-blue-light);
+}
+.audience-card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+.audience-card p {
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  line-height: 1.7;
+}
+
+.compliance-note {
+  margin-top: 48px;
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.06), rgba(40, 167, 69, 0.04));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 40px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+.compliance-note svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--accent-green);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.compliance-note p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+/* --- Roadmap Section --- */
+.roadmap-timeline {
+  margin-top: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+.roadmap-timeline::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent-blue), var(--accent-green), var(--fg-muted));
+}
+.roadmap-item {
+  display: flex;
+  gap: 32px;
+  padding: 24px 0;
+  position: relative;
+}
+.roadmap-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  top: 4px;
+  left: 19px;
+  z-index: 1;
+}
+.roadmap-dot.active {
+  background: var(--accent-blue);
+  box-shadow: 0 0 16px var(--accent-blue-glow);
+}
+.roadmap-dot.planned {
+  background: var(--bg-lighter);
+  border: 2px solid var(--accent-blue);
+}
+.roadmap-dot.future {
+  background: var(--bg-lighter);
+  border: 2px solid var(--fg-muted);
+}
+.roadmap-content {
+  flex: 1;
+  padding-left: 12px;
+}
+.roadmap-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.roadmap-badge.dev {
+  background: rgba(0, 102, 204, 0.15);
+  color: var(--accent-blue-light);
+}
+.roadmap-badge.planned {
+  background: rgba(40, 167, 69, 0.12);
+  color: var(--accent-green);
+}
+.roadmap-badge.future {
+  background: rgba(102, 102, 102, 0.15);
+  color: var(--fg-muted);
+}
+.roadmap-content h3 {
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+}
+.roadmap-content p {
+  font-size: 0.9rem;
+  color: var(--fg-subtle);
+  line-height: 1.7;
+  max-width: 500px;
+}
+
+/* --- Licensing Section --- */
+.license-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-top: 56px;
+  align-items: start;
+}
+.license-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.license-card.featured {
+  border-color: var(--accent-blue);
+}
+.license-card.featured::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-light));
+}
+.license-type {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-blue-light);
+  margin-bottom: 16px;
+}
+.license-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+}
+.license-card > p {
+  font-size: 0.95rem;
+  color: var(--fg-subtle);
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+.license-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.license-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--fg-subtle);
+  line-height: 1.6;
+}
+.license-features li svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent-green);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.license-info h3 {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+.license-info p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.license-highlight {
+  background: rgba(40, 167, 69, 0.08);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-top: 24px;
+}
+.license-highlight p {
+  font-size: 0.9rem;
+  color: var(--fg-subtle);
+  margin-bottom: 0;
+}
+.license-highlight strong { color: var(--accent-green); }
+
+/* --- CTA Section --- */
+.cta-section {
+  text-align: center;
+  padding: 100px 0 120px;
+}
+.cta-section h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 16px;
+}
+.cta-section p {
+  font-size: 1.15rem;
+  color: var(--fg-subtle);
+  max-width: 500px;
+  margin: 0 auto 40px;
+  line-height: 1.8;
+}
+.cta-section .btn-group { justify-content: center; }
+
+.cta-contact {
+  margin-top: 48px;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+.cta-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--fg-subtle);
+}
+.cta-contact-item svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--fg-muted);
+}
+
+/* --- Footer --- */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 0;
+}
+.footer-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.footer-brand img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.footer-brand span {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--fg);
+  letter-spacing: 1.5px;
+}
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+.footer-links a {
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--fg); }
+
+/* --- Scroll Reveal Animations --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.stagger > * { transition-delay: calc(var(--i, 0) * 50ms); }
+
+/* --- Back to Top --- */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-lighter);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s;
+  z-index: 999;
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.back-to-top:hover {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+.back-to-top svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--fg);
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 1024px) {
+  :root { --section-pad: 80px; }
+  .about-grid { grid-template-columns: 1fr; gap: 48px; }
+  .about-text { max-width: 100%; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .showcase { padding: 40px; }
+  .audience-grid { grid-template-columns: repeat(2, 1fr); }
+  .license-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  :root { --section-pad: 64px; }
+  .container { padding: 0 20px; }
+
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+  .nav-links.open {
+    display: flex;
     position: absolute;
-    top: -120px; right: -80px;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(0,102,204,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -100px; left: -60px;
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(0,102,204,0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero .container { position: relative; z-index: 1; text-align: center; }
-  .hero-logo-area {
-    display: flex;
+    top: 72px;
+    left: 0;
+    right: 0;
     flex-direction: column;
-    align-items: center;
-    margin-bottom: var(--sp-xxl);
-  }
-  .hero-app-name {
-    font-size: 56px;
-    font-weight: 700;
-    letter-spacing: -1.5px;
-    line-height: 1.1;
-    text-align: center;
-  }
-  .hero-subtitle {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--fg-dim);
-    margin-top: var(--sp-md);
-    text-align: center;
+    background: rgba(10, 12, 12, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 24px 32px;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
   }
 
-  /* ── Sections ── */
-  section {
-    padding: 64px 0;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-  section:last-of-type { border-bottom: none; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .audience-grid { grid-template-columns: 1fr; }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--accent-blue);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: var(--sp-sm);
-  }
-  .section-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: var(--sp-sm);
-    letter-spacing: -0.5px;
-  }
-  .section-subtitle {
-    font-size: 14px;
-    color: var(--fg-dim);
-    margin-bottom: var(--sp-3xl);
-    max-width: 640px;
-  }
-
-  /* ── About ── */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--sp-xxl);
-  }
-  .about-text {
-    font-size: 14px;
-    color: var(--fg-dim);
-    line-height: 1.75;
-  }
-  .about-highlights {
-    display: flex;
+  .portable-banner {
     flex-direction: column;
-    gap: var(--sp-lg);
-  }
-  .highlight-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--sp-md);
-  }
-  .highlight-icon {
-    width: 36px; height: 36px; min-width: 36px;
-    background: rgba(0,102,204,0.12);
-    border-radius: var(--r-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .highlight-icon svg { width: 18px; height: 18px; }
-  .highlight-label {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 2px;
-  }
-  .highlight-desc {
-    font-size: 12px;
-    color: var(--fg-dim);
-  }
-
-  /* ── Metrics ── */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--sp-lg);
-  }
-  .metric-card {
-    background: var(--bg-darker);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--r-md);
-    padding: var(--sp-xxl);
     text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent-blue);
-  }
-  .metric-card.green::before { background: var(--accent-green); }
-  .metric-card.yellow::before { background: var(--warning-yellow); }
-  .metric-card.green .metric-value { color: var(--accent-green); }
-  .metric-card.yellow .metric-value { color: var(--warning-yellow); }
-  .metric-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--fg-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .metric-detail {
-    font-size: 11px;
-    color: var(--fg-muted);
-    margin-top: var(--sp-sm);
+    padding: 32px 24px;
+    gap: 24px;
   }
 
-  /* ── Features ── */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--sp-lg);
-  }
-  .feature-card {
-    background: var(--bg-lighter);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--r-md);
-    padding: var(--sp-xxl);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-  }
-  .feature-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-shallow);
-  }
-  .feature-icon {
-    width: 40px; height: 40px;
-    background: rgba(0,102,204,0.12);
-    border-radius: var(--r-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: var(--sp-lg);
-  }
-  .feature-icon svg { width: 20px; height: 20px; }
-  .feature-name {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: var(--sp-sm);
-  }
-  .feature-desc {
-    font-size: 13px;
-    color: var(--fg-dim);
-    line-height: 1.6;
-  }
-  .card-note {
-    font-size: 11px;
-    color: var(--fg-muted);
-    margin-top: var(--sp-sm);
-    font-style: italic;
-  }
+  .hero { padding: 100px 20px 60px; }
+  .hero h1 { letter-spacing: -1px; }
 
-  /* ── Target Environment ── */
-  .env-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--sp-3xl);
-  }
-  .env-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-md);
-  }
-  .env-list li {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-md);
-    font-size: 14px;
-    color: var(--fg-dim);
-  }
-  .env-list li::before {
-    content: '';
-    width: 8px; height: 8px; min-width: 8px;
-    background: var(--accent-blue);
-    border-radius: 2px;
-  }
-  .env-note {
-    background: var(--bg-darker);
-    border: 1px solid var(--border-subtle);
-    border-left: 3px solid var(--accent-blue);
-    border-radius: var(--r-sm);
-    padding: var(--sp-xl);
-  }
-  .env-note-title {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: var(--sp-sm);
-  }
-  .env-note-text {
-    font-size: 13px;
-    color: var(--fg-dim);
-    line-height: 1.6;
-  }
+  .cta-contact { flex-direction: column; align-items: center; gap: 16px; }
 
-  /* ── Licensing ── */
-  .license-card {
-    background: var(--bg-darker);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--r-md);
-    padding: var(--sp-3xl) var(--sp-xxl);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-  }
-  .license-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-deep);
-  }
-  .license-card.featured { border-color: var(--accent-blue); }
-  .license-name {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: var(--sp-xs);
-  }
-  .license-desc {
-    font-size: 12px;
-    color: var(--fg-dim);
-    margin-bottom: var(--sp-xxl);
-    line-height: 1.5;
-  }
-  .license-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-sm);
-    flex: 1;
-  }
-  .license-features li {
-    font-size: 13px;
-    color: var(--fg-dim);
-    display: flex;
-    align-items: center;
-    gap: var(--sp-sm);
-  }
-  .license-features li::before {
-    content: '✓';
-    color: var(--accent-green);
-    font-weight: 700;
-    font-size: 12px;
-    min-width: 16px;
-  }
+  .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+}
 
-  /* ── Contact / CTA ── */
-  .cta-section {
-    background: var(--bg-darker) url('./media_pack_swarm/bg_banner.png') center center / cover no-repeat;
-    border-top: 2px solid var(--accent-blue);
-    padding: 64px 0;
-  }
-  .cta-inner {
-    text-align: center;
-    max-width: 560px;
-    margin: 0 auto;
-  }
-  .cta-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: var(--sp-md);
-    letter-spacing: -0.5px;
-  }
-  .cta-text {
-    font-size: 14px;
-    color: var(--fg-dim);
-    margin-bottom: var(--sp-3xl);
-    line-height: 1.6;
-  }
-  .cta-actions {
-    display: flex;
-    justify-content: center;
-    gap: var(--sp-lg);
-    margin-bottom: var(--sp-3xl);
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-sm);
-    padding: 10px 24px;
-    border-radius: var(--r-sm);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .btn-primary {
-    background: var(--accent-blue);
-    color: var(--fg);
-  }
-  .btn-primary:hover { background: var(--accent-blue-dark); }
-  .cta-contact {
-    display: flex;
-    justify-content: center;
-    gap: var(--sp-3xl);
-  }
-  .cta-contact-item {
-    font-size: 13px;
-    color: var(--fg-dim);
-  }
-  .cta-contact-item strong {
-    display: block;
-    font-size: 11px;
-    color: var(--fg-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: var(--sp-xs);
-    font-weight: 600;
-  }
-  .cta-contact-item a {
-    color: var(--link-blue);
-    text-decoration: none;
-  }
-  .cta-contact-item a:hover { color: var(--link-hover); }
-
-  /* ── Footer ── */
-  .footer {
-    padding: var(--sp-xxl) 0;
-    text-align: center;
-    font-size: 11px;
-    color: var(--fg-muted);
-    border-top: 1px solid var(--border-subtle);
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    .container { padding: 0 var(--sp-lg); }
-    .hero { padding: 48px 0 40px; }
-    .hero-app-name { font-size: 36px; }
-    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-    .features-grid { grid-template-columns: 1fr; }
-    .about-grid, .env-content { grid-template-columns: 1fr; }
-    .cta-actions { flex-direction: column; align-items: center; }
-    .cta-contact { flex-direction: column; gap: var(--sp-lg); }
-  }
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .btn-group { flex-direction: column; align-items: stretch; }
+  .btn { justify-content: center; }
+  .showcase { padding: 28px 20px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════ HERO ═══════ -->
-<header class="hero">
-  <div class="container">
-    <div class="hero-logo-area">
-      <img src="./media_pack_swarm/swarm.png" alt="SWARM Logo" height=256 width=256>
-      <h1 class="hero-app-name">SWARM</h1>
-      <p class="hero-subtitle">STIG Workflow and Review Manager</p>
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-brand">
+      <img src="media_pack_swarm/swarm.png" alt="SWARM" class="nav-logo">
+      <span class="nav-brand-text">SWARM</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#about" class="nav-link">About</a>
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#audience" class="nav-link">Who It's For</a>
+      <a href="#roadmap" class="nav-link">Roadmap</a>
+      <a href="#licensing" class="nav-link">Licensing</a>
+      <a href="#contact" class="btn btn-primary nav-cta">Get a Quote</a>
+    </div>
+    <button class="nav-hamburger" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-logo">
+      <img src="media_pack_swarm/swarm.png" alt="SWARM Logo">
+    </div>
+    <h1 class="gradient-text">SWARM</h1>
+    <p class="hero-tagline">STIG Workflow And Review Manager</p>
+    <p class="hero-desc">
+      Load thousands of checklists. Edit findings in bulk.
+      Save in seconds. The fastest way to manage DISA STIG compliance.
+    </p>
+    <div class="btn-group">
+      <a href="#contact" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        Request a Quote
+      </a>
+      <a href="#features" class="btn btn-outline">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        See Features
+      </a>
     </div>
   </div>
-</header>
 
-<!-- ═══════ ABOUT ═══════ -->
-<section>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     STATS BAR
+     ============================================================ -->
+<div class="hero-accent-line"></div>
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div class="stat-item reveal" style="--i:0">
+      <div class="stat-number"><span class="accent" data-count="20">&lt;20</span>s</div>
+      <div class="stat-label">Load 5,000 Checklists</div>
+    </div>
+    <div class="stat-item reveal" style="--i:1">
+      <div class="stat-number"><span class="accent" data-count="800000">800K</span>+</div>
+      <div class="stat-label">Vulnerabilities Rendered</div>
+    </div>
+    <div class="stat-item reveal" style="--i:2">
+      <div class="stat-number"><span class="accent">&lt;0.2</span>s</div>
+      <div class="stat-label">Filter Speed</div>
+    </div>
+    <div class="stat-item reveal" style="--i:3">
+      <div class="stat-number"><span class="accent">&lt;50</span><span style="font-size:0.6em">MB</span></div>
+      <div class="stat-label">Total Footprint</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+<section class="section" id="about">
   <div class="container">
-    <h2 class="section-title fade-in">About SWARM</h2>
-
-    <div class="about-grid">
-      <div class="about-text fade-in stagger-1">
-        <p>SWARM is a native desktop application designed for RMF professionals working within DoD and government environments. It provides a centralized interface for loading, reviewing, editing, and managing DISA STIG checklists — replacing fragmented manual processes with a streamlined, high-performance workflow.</p>
-        <br>
-        <p>SWARM is fully standalone and portable — no installation, no cloud dependencies, no external services required. Drop it on a machine and it runs. Connected or disconnected, teams can be productive immediately without waiting on IT or infrastructure.</p>
-        <br>
-        <p>SWARM was designed by practitioners who live in the STIG ecosystem daily. Every feature exists because it solves a real problem - not because it looks good on a slide. The result is a tool that fits naturally into existing RMF workflows while dramatically reducing the time and effort required to maintain compliance posture.</p>
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <div class="section-label">About</div>
+        <h2>Built for <span class="gradient-text">RMF Professionals</span></h2>
+        <p>
+          <span class="brand-mention">SWARM</span> is a native desktop application designed for RMF professionals
+          working within DoD and government environments. It provides a
+          centralized interface for loading, reviewing, editing, and managing
+          DISA STIG checklists. One interface replaces fragmented manual processes with a
+          streamlined, high-performance workflow.
+        </p>
+        <p>
+          Every seat gets the full product. No feature gates, no tiers,
+          no surprises. Load a directory, get to work.
+        </p>
       </div>
-      <div class="about-highlights">
-        <div class="highlight-item fade-in stagger-1">
-          <div class="highlight-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <div class="about-cards stagger">
+        <div class="about-card" style="--i:1">
+          <div class="about-card-title">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+            High Performance
           </div>
-          <div>
-            <div class="highlight-label">High-Performance Native App</div>
-            <div class="highlight-desc">Loads and manages hundreds of checklists with instant filtering and a responsive interface — fast enough to keep up with your workflow</div>
+          <p>Loads and manages thousands of checklists with instant filtering and a responsive interface. Fast enough to keep up with your workflow.</p>
+        </div>
+        <div class="about-card" style="--i:2">
+          <div class="about-card-title">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H6v-2h6v2zm4-4H6v-2h10v2zm0-4H6V7h10v2z"/></svg>
+            Bulk Management
+          </div>
+          <p>Load entire directories of CKL files, edit findings across thousands of checklists at once, and track unsaved changes at a glance.</p>
+        </div>
+        <div class="about-card" style="--i:3">
+          <div class="about-card-title">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+            Smart Filtering
+          </div>
+          <p>Build custom filters to slice through findings by severity, status, STIG, or any combination. Export and share filters across your team.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portable Banner -->
+    <div class="portable-banner reveal">
+      <div class="portable-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+      </div>
+      <div class="portable-text">
+        <h3>Runs Anywhere</h3>
+        <p>No installation. Standalone <strong>.EXE</strong>. No dependencies or internet access required.
+        Drop it on any machine. Classified, unclassified, connected, or completely disconnected. It just works.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Capabilities</div>
+      <h2>Everything you need.<br><span class="gradient-text">Nothing you don't.</span></h2>
+      <p class="section-desc">
+        One tool for the entire STIG checklist workflow. From bulk loading
+        to filtered review to final save.
+      </p>
+    </div>
+
+    <div class="features-grid stagger">
+      <!-- Bulk Operations -->
+      <div class="feature-card reveal" style="--i:0">
+        <div class="feature-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg>
+        </div>
+        <h3>Bulk Operations</h3>
+        <p>Load, edit, save, and manage hundreds of checklists at once. Select a directory and <span class="brand-mention">SWARM</span> handles the rest. Bulk status changes, bulk comments, bulk saves.</p>
+      </div>
+
+      <!-- Advanced Filtering -->
+      <div class="feature-card reveal" style="--i:1">
+        <div class="feature-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+        </div>
+        <h3>Advanced Filtering</h3>
+        <p>Field-based search with operators. Filter by severity, status, STIG, hostname, or any combination. Filters apply instantly across 800K+ vulnerabilities.</p>
+      </div>
+
+      <!-- Mitigations & Overlays -->
+      <div class="feature-card reveal" style="--i:2">
+        <div class="feature-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        </div>
+        <h3>Mitigations & Overlays</h3>
+        <p>Apply answer files or overlays to auto-answer vulnerabilities in bulk. Preview exactly what will change before committing. Selectively apply only what you want.</p>
+      </div>
+
+      <!-- Host Info Management -->
+      <div class="feature-card reveal" style="--i:3">
+        <div class="feature-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zM7 19c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM20 3H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM7 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+        </div>
+        <h3>Host Info Management</h3>
+        <p>Manage hostname, IP, MAC, and FQDN across multiple checklists simultaneously. Update machine identity in bulk instead of one at a time.</p>
+      </div>
+
+      <!-- STIG Updates -->
+      <div class="feature-card reveal" style="--i:4">
+        <div class="feature-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </div>
+        <h3>STIG Version Updates</h3>
+        <p>Update checklists to new STIG versions with intelligent matching. Findings, statuses, and comments carry over automatically. No manual re-entry.</p>
+      </div>
+
+      <!-- Export -->
+      <div class="feature-card reveal" style="--i:5">
+        <div class="feature-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </div>
+        <h3>Export & Reporting</h3>
+        <p>Export host information to CSV or XLSX. Get data out in the format you need for reporting, audits, or inventory tracking.</p>
+      </div>
+    </div>
+
+    <!-- Search Showcase -->
+    <div class="showcase reveal">
+      <div class="showcase-text">
+        <h3><span class="gradient-text">Structured Search</span></h3>
+        <p>
+          Field-based queries with operators let you find exactly what you need across
+          every loaded checklist. Instantly.
+        </p>
+        <div class="showcase-pairs">
+          <div class="showcase-pair">
+            <div class="showcase-example">
+              <span class="kw">severity:</span><span class="val">medium</span> <span class="kw">status:</span><span class="val">open</span>
+            </div>
+            <div class="showcase-or">OR</div>
+            <div class="showcase-example">
+              <span class="kw">se:</span><span class="val">medium</span> <span class="kw">st:</span><span class="val">open</span>
+            </div>
+          </div>
+          <div class="showcase-pair">
+            <div class="showcase-example">
+              <span class="kw">title:</span><span class="val">password,credential</span>
+            </div>
+            <div class="showcase-or">OR</div>
+            <div class="showcase-example">
+              <span class="kw">t:</span><span class="val">password,credential</span>
+            </div>
+          </div>
+          <div class="showcase-pair">
+            <div class="showcase-example">
+              <span class="kw">comments:</span><span class="val">blank</span> <span class="kw">status:</span><span class="val">not a finding</span>
+            </div>
+            <div class="showcase-or">OR</div>
+            <div class="showcase-example">
+              <span class="kw">c:</span><span class="val">blank</span> <span class="kw">st:</span><span class="val">not a finding</span>
+            </div>
           </div>
         </div>
-        <div class="highlight-item fade-in stagger-2">
-          <div class="highlight-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div>
-            <div class="highlight-label">Standalone &amp; Portable</div>
-            <div class="highlight-desc">No installation, no dependencies, no network required. Runs on any machine, on any network — connected or disconnected</div>
-          </div>
+      </div>
+      <div class="showcase-visual">
+        <img src="media_pack_swarm/swarm-ui-screenshot.png" alt="SWARM filtering interface showing data grid with search and filter popup" class="showcase-img">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     WHO IT'S FOR
+     ============================================================ -->
+<section class="section" id="audience">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Target Environment</div>
+      <h2>Built for <span class="gradient-text">government</span></h2>
+      <p class="section-desc">
+        <span class="brand-mention">SWARM</span> is designed for the teams and environments that need it most.
+        from classified enclaves to enterprise deployments.
+      </p>
+    </div>
+
+    <div class="audience-grid stagger">
+      <div class="audience-card reveal" style="--i:0">
+        <div class="audience-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
         </div>
-        <div class="highlight-item fade-in stagger-3">
-          <div class="highlight-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          </div>
-          <div>
-            <div class="highlight-label">Bulk Checklist Management</div>
-            <div class="highlight-desc">Load entire directories of CKL files, edit findings across multiple checklists, and track unsaved changes at a glance</div>
-          </div>
+        <h3>Department of Defense</h3>
+        <p>DoD agencies managing RMF compliance across thousands of information systems.</p>
+      </div>
+      <div class="audience-card reveal" style="--i:1">
+        <div class="audience-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
         </div>
-        <div class="highlight-item fade-in stagger-4">
-          <div class="highlight-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          <div>
-            <div class="highlight-label">Advanced Filtering &amp; Sharing</div>
-            <div class="highlight-desc">Build powerful custom filters to slice through findings by severity, status, STIG, or any combination — then export and share filters across your team</div>
-          </div>
+        <h3>NAVSEA &amp; Naval Commands</h3>
+        <p>Naval systems commands with large-scale STIG assessment requirements across fleet systems.</p>
+      </div>
+      <div class="audience-card reveal" style="--i:2">
+        <div class="audience-icon">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+        <h3>ISSOs &amp; Sysadmins</h3>
+        <p>Information System Security Officers and system administrators performing day-to-day STIG assessments.</p>
+      </div>
+    </div>
+
+    <div class="compliance-note reveal">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+      <p>
+        <span class="brand-mention">SWARM</span> follows the same NIST standards and checklist workflows required by DISA.
+        It utilizes official DISA STIGs and produces checklists fully compatible with
+        existing review processes. <span class="brand-mention">SWARM</span> is already used in RMF compliance efforts to
+        approve packages reviewed by NAVSEA.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     ROADMAP
+     ============================================================ -->
+<section class="section" id="roadmap">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">What's Next</div>
+      <h2>Roadmap</h2>
+      <p class="section-desc">
+        <span class="brand-mention">SWARM</span> is actively developed with new capabilities shipping regularly.
+      </p>
+    </div>
+
+    <div class="roadmap-timeline reveal">
+      <div class="roadmap-item">
+        <div class="roadmap-dot active"></div>
+        <div class="roadmap-content">
+          <div class="roadmap-badge dev">In Development</div>
+          <h3>Enhanced Search</h3>
+          <p>Expanded search operators, saved search history, and cross-checklist query capabilities for even faster navigation through large datasets.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot planned"></div>
+        <div class="roadmap-content">
+          <div class="roadmap-badge planned">Planned</div>
+          <h3>Answer Key Editor</h3>
+          <p>A modern, JSON-based answer key system replacing legacy overlay formats. Create, edit, and manage answer keys directly within <span class="brand-mention">SWARM</span> with a purpose-built UI for fast, intuitive editing.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot future"></div>
+        <div class="roadmap-content">
+          <div class="roadmap-badge future">Future</div>
+          <h3>And More</h3>
+          <p>Continued performance improvements, additional export formats, and workflow enhancements driven by real-world usage and feedback from the field.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════ KEY METRICS ═══════ -->
-<section>
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     LICENSING
+     ============================================================ -->
+<section class="section" id="licensing">
   <div class="container">
-    <div class="section-label fade-in">Performance</div>
-    <h2 class="section-title fade-in">Key Metrics</h2>
-    <p class="section-subtitle fade-in">Built to perform. Proven to deliver</p>
-
-    <div class="metrics-grid">
-      <div class="metric-card fade-in stagger-1">
-        <div class="metric-value" data-count="15" data-prefix="~" data-suffix="s">&lt;20s</div>
-        <div class="metric-label">Load Time</div>
-        <div class="metric-detail">5000 (~3GB) checklists loaded and parsed</div>
-      </div>
-      <div class="metric-card green fade-in stagger-2">
-        <div class="metric-value" data-count="500" data-suffix="k+">800k+</div>
-        <div class="metric-label">Vulnerabilities Rendered</div>
-        <div class="metric-detail">Smooth scrolling, zero stutter</div>
-      </div>
-      <div class="metric-card yellow fade-in stagger-3">
-        <div class="metric-value" data-count="0.1" data-prefix="<" data-suffix="s">&lt;0.2s</div>
-        <div class="metric-label">Filter Speed</div>
-        <div class="metric-detail">Across 800K total vulnerabilities</div>
-      </div>
-      <div class="metric-card fade-in stagger-4">
-        <div class="metric-value" data-count="50" data-prefix="<" data-suffix="MB">&lt;50MB</div>
-        <div class="metric-label">Total Footprint</div>
-        <div class="metric-detail">Single portable application</div>
-      </div>
+    <div class="reveal">
+      <div class="section-label">Procurement</div>
+      <h2>Volume Licensing</h2>
+      <p class="section-desc">
+        Simple, transparent licensing built for government procurement.
+      </p>
     </div>
-    <div>
-      <p class="card-note">* Metrics tested on Windows 11 | 16 core CPU | NVMe SSD</p>
-    </div>
-  </div>
-</section>
 
-<!-- ═══════ PRODUCT FEATURES ═══════ -->
-<section>
-  <div class="container">
-    <div class="section-label fade-in">Capabilities</div>
-    <h2 class="section-title fade-in">Product Features</h2>
-    <p class="section-subtitle fade-in">Everything you need to manage STIG compliance at scale</p>
-
-    <div class="features-grid">
-      <div class="feature-card fade-in stagger-1">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </div>
-        <div class="feature-name">Bulk Operations</div>
-        <div class="feature-desc">Load, edit, save, and manage hundreds of checklists at once. Select a directory and SWARM handles the rest — bulk status changes, bulk comments, bulk saves. Everything scales.</div>
-      </div>
-      <div class="feature-card fade-in stagger-2">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="feature-name">Advanced Filtering</div>
-        <div class="feature-desc">Build powerful custom filters to slice through findings by severity, status, STIG, or any combination. Filters apply instantly across massive datasets — and can be exported and shared across your team.</div>
-      </div>
-      <div class="feature-card fade-in stagger-3">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div class="feature-name">Mitigations &amp; Overlays</div>
-        <div class="feature-desc">Apply answer files or overlays to auto-answer vulnerabilities in bulk. Preview exactly what will change before committing, and selectively apply only the findings you want.</div>
-      </div>
-      <div class="feature-card fade-in stagger-4">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <div class="feature-name">Host Info Management</div>
-        <div class="feature-desc">Manage hostname, IP, MAC, and FQDN across multiple checklists simultaneously. Update machine identity in bulk instead of editing checklists one at a time.</div>
-      </div>
-      <div class="feature-card fade-in stagger-5">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <div class="feature-name">Export &amp; Reporting</div>
-        <div class="feature-desc">Export host information to CSV or XLSX. Get the data out in the format you need for reporting, audits, or inventory tracking.</div>
-      </div>
-      <div class="feature-card fade-in stagger-6">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4DA8DA" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-        </div>
-        <div class="feature-name">Cross-Platform &amp; Portable</div>
-        <div class="feature-desc">Runs natively on Windows, macOS, and Linux. No installation, no dependencies, no network required — drop it on a machine and go.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════ TARGET ENVIRONMENT ═══════ -->
-<section>
-  <div class="container">
-    <div class="section-label fade-in">Audience</div>
-    <h2 class="section-title fade-in">Target Environment</h2>
-    <p class="section-subtitle fade-in">Built by and for the people who actually do the work</p>
-
-    <div class="env-content">
-      <div class="fade-in stagger-1">
-        <ul class="env-list">
-          <li>Department of Defense (DoD)</li>
-          <li>NAVSEA / Naval Systems Commands</li>
-          <li>Government entities managing RMF compliance</li>
-          <li>Information System Security Officers (ISSOs)</li>
-          <li>System administrators performing STIG assessments</li>
-          <li>Any organization working with DISA STIG checklists</li>
+    <div class="license-layout reveal">
+      <div class="license-card featured">
+        <div class="license-type">Annual Contract</div>
+        <h3>Volume License</h3>
+        <p>Per-seat volume licensing scaled to your deployment. Every seat gets the full product. No feature gates, no hidden fees.</p>
+        <ul class="license-features">
+          <li>
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            All features included. No tiers, no add-ons
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            All patches, updates, and new features for the contract term
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Dedicated support from the engineering team
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Flexible renewal terms
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            No installation or IT overhead. Deploy to any machine instantly
+          </li>
         </ul>
       </div>
-      <div class="fade-in stagger-2">
-        <div class="env-note">
-          <div class="env-note-title">Works Everywhere, Out of the Box</div>
-          <div class="env-note-text">SWARM requires no setup, no configuration, and no network access to function. It runs on classified networks, unclassified networks, connected environments, and fully disconnected systems. Drop it on a machine and start working immediately.</div>
-        </div>
-        <div class="env-note" style="margin-top: var(--sp-lg);">
-          <div class="env-note-title">RMF &amp; DISA STIG Aligned</div>
-          <div class="env-note-text">SWARM follows the same NIST standards and checklist workflows used by industry-standard RMF tools. It utilizes official DISA STIGs and produces checklists fully compatible with existing review processes. SWARM has been used in RMF compliance efforts to approve packages reviewed by NAVSEA.</div>
+
+      <div class="license-info">
+        <h3>Procurement-Ready</h3>
+        <p>
+          <span class="brand-mention">SWARM</span> is designed for annual procurement cycles. Volume pricing
+          scales with your team. From a handful of seats to enterprise
+          deployment across an entire command.
+        </p>
+        <p>
+          No servers to provision, no cloud subscriptions, no infrastructure
+          costs. Just a single executable per seat.
+        </p>
+        <div class="license-highlight">
+          <p>
+            <strong>Zero IT overhead.</strong> No installation, no configuration,
+            no network access required. Drop the .EXE on a machine and your team
+            is productive immediately.
+          </p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════ LICENSING & SUPPORT ═══════ -->
-<section>
-  <div class="container">
-    <div class="section-label fade-in">Procurement</div>
-    <h2 class="section-title fade-in">Licensing &amp; Support</h2>
-    <p class="section-subtitle fade-in">Simple volume licensing with ongoing maintenance and dedicated support.</p>
+<div class="section-divider"></div>
 
-    <div style="max-width: 720px; margin: 0 auto;" class="fade-in stagger-1">
-      <div class="license-card featured" style="padding-top: 44px;">
-        <div style="position:absolute;top:0;left:0;right:0;background:var(--accent-blue);color:white;text-align:center;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 0;border-radius:var(--r-md) var(--r-md) 0 0;">VOLUME LICENSE — ANNUAL CONTRACT</div>
-        <div class="license-name" style="font-size:24px;margin-bottom:var(--sp-md);">SWARM</div>
-        <div class="license-desc" style="font-size:14px;margin-bottom:var(--sp-xxl);line-height:1.6;">Every seat gets the full product — no feature gates, no hidden fees, no surprises.</div>
-        <ul class="license-features" style="gap:var(--sp-md);">
-          <li>Per-seat volume licensing scaled to your deployment</li>
-          <li>Annual contract term with flexible renewal</li>
-          <li>All patches, updates, and new features included</li>
-          <li>Dedicated support from a team that knows the tool and your environment</li>
-        </ul>
-        <div style="margin-top:var(--sp-3xl);padding-top:var(--sp-xl);border-top:1px solid var(--border-subtle);text-align:center;">
-          <a href="mailto:[email]" class="btn btn-primary" style="padding:12px 40px;font-size:16px;">Request a Quote</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════ CONTACT / CTA ═══════ -->
-<div class="cta-section">
+<!-- ============================================================
+     CTA / CONTACT
+     ============================================================ -->
+<section class="cta-section" id="contact">
   <div class="container">
-    <div class="cta-inner">
-      <h2 class="cta-title fade-in">Ready to Get Started?</h2>
-      <p class="cta-text fade-in stagger-1">See SWARM in action — request a demo and we'll walk you through it.</p>
-      <div class="cta-actions fade-in stagger-2">
-        <a href="mailto:[email]?subject=SWARM%20Demo%20Request" class="btn btn-primary">Request a Demo</a>
+    <div class="reveal">
+      <h2>Ready to <span class="gradient-text">get started</span>?</h2>
+      <p>Get a quote for your team and start managing checklists the right way.</p>
+      <div class="btn-group">
+        <a href="mailto:swarm@company.com?subject=SWARM Quote Request" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          Request a Quote
+        </a>
+        <a href="mailto:swarm@company.com?subject=SWARM Demo Request" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          Request a Demo
+        </a>
       </div>
-      <div class="cta-contact fade-in stagger-3">
+      <div class="cta-contact">
         <div class="cta-contact-item">
-          <strong>Email</strong>
-          <a href="mailto:[email]">swarm@company.com</a>
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          swarm@company.com
         </div>
         <div class="cta-contact-item">
-          <strong>Phone</strong>
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
           123-456-7890
         </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- ═══════ FOOTER ═══════ -->
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
 <footer class="footer">
-  <div class="container">
-    © 2026 SWARM. All rights reserved.
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="media_pack_swarm/swarm.png" alt="SWARM">
+      <span>SWARM</span>
+    </div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#licensing">Licensing</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 SWARM. All rights reserved.</div>
   </div>
 </footer>
 
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+</button>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
 <script>
-// ── Scroll fade-in observer ──
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      e.target.querySelectorAll('.metric-value[data-count]').forEach(el => {
-        if (el.classList.contains('counted')) return;
-        el.classList.add('counted');
-        animateValue(el);
-      });
-    }
-  });
-}, { threshold: 0.3, rootMargin: '0px 0px -80px 0px' });
+(function() {
+  'use strict';
 
-// Only observe elements that aren't already visible in the initial viewport
-setTimeout(() => {
-  document.querySelectorAll('.fade-in').forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.75) {
-      // Already in view on load — show immediately, no animation
-      el.style.opacity = '1';
-      el.style.transform = 'none';
-    } else {
-      obs.observe(el);
-    }
-  });
-}, 50);
+  // ── Navigation scroll effect ──────────────────────────────────
+  const nav = document.getElementById('nav');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
 
-// ── Metric count-up animation ──
-function animateValue(el) {
-  const target = parseFloat(el.dataset.count);
-  const prefix = el.dataset.prefix || '';
-  const suffix = el.dataset.suffix || '';
-  const isDecimal = target < 1;
-  const duration = 800;
-  const start = performance.now();
-
-  function step(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-    const current = target * eased;
-
-    if (isDecimal) {
-      el.textContent = prefix + current.toFixed(1) + suffix;
-    } else {
-      el.textContent = prefix + Math.round(current) + suffix;
-    }
-
-    if (progress < 1) requestAnimationFrame(step);
+  function updateNav() {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
   }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
 
-  requestAnimationFrame(step);
-}
+  // Mobile nav toggle
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close mobile nav on link click
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // ── Active nav tracking ───────────────────────────────────────
+  const sections = document.querySelectorAll('section[id]');
+  const allNavLinks = document.querySelectorAll('.nav-link[href^="#"]');
+
+  const navObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        allNavLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '-80px 0px -50% 0px' });
+
+  sections.forEach(section => navObserver.observe(section));
+
+  // ── Scroll reveal ─────────────────────────────────────────────
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        // Stagger children
+        if (entry.target.classList.contains('stagger')) {
+          const children = entry.target.children;
+          Array.from(children).forEach((child, i) => {
+            child.style.transitionDelay = (i * 100) + 'ms';
+            requestAnimationFrame(() => child.classList.add('visible'));
+          });
+        }
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // Also reveal stagger children individually
+  document.querySelectorAll('.stagger > .reveal').forEach(el => revealObserver.observe(el));
+
+  // ── Back to top ───────────────────────────────────────────────
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    backToTop.classList.toggle('visible', window.scrollY > 600);
+  }, { passive: true });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ── Animated counters ─────────────────────────────────────────
+  const counters = document.querySelectorAll('[data-count]');
+  const counterObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.counted) {
+        entry.target.dataset.counted = 'true';
+        const target = parseInt(entry.target.dataset.count);
+        const duration = 2000;
+        const start = performance.now();
+
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.round(eased * target);
+
+          if (target >= 1000) {
+            entry.target.textContent = current.toLocaleString();
+          } else {
+            entry.target.textContent = current;
+          }
+
+          if (progress < 1) requestAnimationFrame(update);
+          else entry.target.textContent = target >= 1000 ? target.toLocaleString() : target;
+        }
+        requestAnimationFrame(update);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(el => counterObserver.observe(el));
+
+
+})();
 </script>
-
 </body>
 </html>
